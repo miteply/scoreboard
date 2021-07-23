@@ -49,7 +49,7 @@ and once the data has been saved or updated, the server will notify the browser.
 
 ## Installation
 - Open chrome browser
-- Download and unzip the source repository 
+- Download and unzip the source repository https://github.com/miteply/scoreboard.git
 - Change directory inside the Project
 - Run the app form command line using the command ( ./mvnw spring-boot:run )
 
