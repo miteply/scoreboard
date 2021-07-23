@@ -1,0 +1,97 @@
+
+h1 {
+    font-family: sans-serif;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    text-align: center;
+
+    
+}
+h2 { 
+	font-family: sans-serif;
+    font-size: 1em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+strong {
+    font-weight: 700;
+    background-color: yellow;
+}
+
+p {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+body {
+    background: #eee
+}
+
+.btn {
+    margin-right: 0.5rem !important
+}
+
+.btn {
+    font-size: 0.875rem;
+    line-height: 1;
+    font-weight: 400;
+    padding: .7rem 1.5rem;
+    border-radius: 0.1275rem
+}
+
+.container {
+    margin-top: 100px
+}
+
+.toast {
+    transition: 0.32s all ease-in-out
+}
+
+.toast-container--fade {
+    right: 0;
+    bottom: 0
+}
+
+.toast-container--fade .toast-wrapper {
+    display: inline-block
+}
+
+.toast.fade-init {
+    opacity: 0
+}
+
+.toast.fade-show {
+    opacity: 1
+}
+
+.toast.fade-hide {
+    opacity: 0
+}
+.scroll-h5 {
+	margin: auto;
+  	width: 50%;
+  	border: 3px solid #e6e8e6;
+  	padding: 10px;
+    height: 300px;
+    overflow: scroll;
+}
+/* Selects any required <input> */
+input:required {
+  border: 1px dashed red;
+}
+
+
+
+
+.events-scrollbar-table {
+	position: relative;
+	height: 300px;
+	overflow: auto;
+	border-collapse: collapse; 
+}
+
+.events-scrollbar-table thead th {
+  position: static;
+  top: 0;
+}
