@@ -20,10 +20,10 @@ and once the data has been saved or updated, the server will notify the browser.
  - H2 Database
  - JavaScript
  - Bootstrap 4.3.1
+ - HTML, CSS
 
 
  ## Project Structure
-- Class DefaultSportEventLoader to save initial data in the database
 - Class SportEvent corresponds to the table of sportevents in the database
 - Class SportEventRequestDto encapsulates data, it is used by controller to transfer data between itself and client
 - Class UtilMapper converts from Entity to DTO and from DTO to Entity
@@ -35,7 +35,7 @@ and once the data has been saved or updated, the server will notify the browser.
 - Web controller WelcomeCtrl to manage the root path endpoint and return index.html
 
 
-## APIs
+# APIs
 
 | Methods                                   | Urls                       | Actions 
 | :------------                             |:---------------            |:-----   
@@ -44,15 +44,117 @@ and once the data has been saved or updated, the server will notify the browser.
 | GET      | /api/events/last               | retrieve the last event    |
 | GET      | /api/events/?name=:name        | retrieve the event by :name|
 | POST     | /api/events                    | create a new SportEvent    |
-| PUT      | /api/events                    | update a SportEvent by:id  |
+| PATCH    | /api/events                    | update a SportEvent by:id  |
+
+### Reference
+
+## Get all sport events
+
+```http
+  GET /api/events
+```
+Return the list of all sport events.
+
+## Get all events by name
+
+```http
+  GET /api/events?name=value
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `name`      | `string` | **Required**. in URL |
+
+## Get event
+
+```http
+  GET /api/events/id
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. in URL |
+| `Version`      | `string` | returned by server in **Response Header**.|
+
+## Get last event
+
+```http
+  GET /api/events/last
+```
+Return the last updated event.
+
+## Create event
+
+```http
+  POST /api/events
+```
+**Require** the following JSON in body request.
+
+{
+
+    "teamHome": "Misha",
+    "teamAway": "Jonik",
+    "scoreHome": 1,
+    "scoreAway": 0
+} 
+
+**Response** 
+- Header : "Location" (endpoint of created resource)
+- Body:
+{
+    "id": 1,
+    "version": 0,
+    "teamHome": "Misha",
+    "teamAway": "Jonik",
+    "scoreHome": 1,
+    "scoreAway": 0,
+    "updatingDate": "2021-07-25 23:03:48"
+    
+}
 
 
-## Installation
-- Open chrome browser
-- Download and unzip the source repository https://github.com/miteply/scoreboard.git
-- Change directory inside the Project
-- Run the app form command line using the command ( ./mvnw spring-boot:run )
+## Update event
 
-## Usage
+```http
+  PATCH /api/events/id
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. in URL |
+| `version`      | `string` | **Required**. in request header |
 
-After running the application you should see the opened browser with the welcome page of the web app where you can create a new sports event and see the push notification when the object has been saved in the database.
+Update only the values passed in the body request only if the client's version of the resource 
+is equal to server version.
+
+### Installation && Tests
+
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/miteply/scoreboard.git
+```
+
+Go to the project directory
+
+```bash
+  cd scoreboard
+```
+
+Run the jar file
+
+```bash
+  java -jar scoreboard-0.0.1-SNAPSHOT.jar
+```
+
+Verify the deployment by navigating to your server address in
+your preferred browser.
+
+```sh
+http://127.0.0.0:8080
+```
+
+## Testing with POSTMAN
+Test in POSTMAN by importing the [json file](https://github.com/miteply/scoreboard/blob/main/scoreboardUrlTest.postman_collection.json) 
