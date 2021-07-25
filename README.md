@@ -143,10 +143,10 @@ Go to the project directory
   cd scoreboard
 ```
 
-Run the jar file
+Open command terminal and run the application by using
 
 ```bash
-  java -jar scoreboard-0.0.1-SNAPSHOT.jar
+  .\mvnw spring-boot:run
 ```
 
 Verify the deployment by navigating to your server address in
