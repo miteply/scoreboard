@@ -8,7 +8,6 @@ import com.misha.scoreboard.dto.SportEventRequestDto;
 import com.misha.scoreboard.model.SportEvent;
 import com.misha.scoreboard.service.SportEventServ;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**

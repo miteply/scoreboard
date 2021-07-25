@@ -31,6 +31,7 @@ public class SportEventRequestDto implements Serializable {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private Long id;
+	private Long version;//used during updating
 	@NotBlank(message = "Team Home name is mandatory")
 	private String teamHome;
 	@NotBlank(message = "Team Away name is mandatory")
@@ -41,7 +42,7 @@ public class SportEventRequestDto implements Serializable {
 	private Integer scoreAway;
 	
 	private String updatingDate;
-
+	
 	public SportEventRequestDto(String teamNameA, String teamNameB, Integer scoreA, Integer scoreB) {
 		this.teamHome = teamNameA;
 		this.teamAway = teamNameB;

@@ -1,9 +1,7 @@
 package com.misha.scoreboard.web;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,10 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.misha.scoreboard.dto.SportEventRequestDto;
-import com.misha.scoreboard.exception.SportEventNotFoundException;
 import com.misha.scoreboard.model.SportEvent;
 import com.misha.scoreboard.service.SportEventServ;
 import com.misha.scoreboard.utils.UtilMapper;
@@ -78,10 +76,10 @@ public class SportEventCtrl {
 	}
     
 	/**
-	 * Takes an event Id from the Url and performs operation to find item.
-	 * Automatically insert an Etag header in the response to to validate then 
-	 * if modified or not. Useful for update the resource, the client should 
-	 * pass the Etag value in header If-None-Match "ETghashcodeThahtIdentifiesResource"
+	 * Takes an event Id from the Url and performs operation to find item in the database.
+	 * Automatically add a new Header response with the name "Version" to manage concurrent update
+	 * of the resource.
+	 * 
 	 * @param eventId
 	 * @return
 	 * @throws ExecutionException 
@@ -90,7 +88,9 @@ public class SportEventCtrl {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getById (@PathVariable("id") Long id, HttpServletRequest request) {
 		try {	
-			return ResponseEntity.ok(eventService.findById(id));
+			SportEventRequestDto findById = eventService.findById(id);
+			return ResponseEntity.ok().header("Version", findById.getVersion().toString())//version of the resource
+									  .body(findById);
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -136,37 +136,28 @@ public class SportEventCtrl {
 	
 	/**	
 	 * Finds the id and updates the entity with new value
+	 * only if the request contains the header with the
+	 * name Version and its value is equals to database's version, the client data will
+	 * updated in the database.
 	 * @param id
 	 * @param dto
 	 * @return
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	@PutMapping("/{id}")
-	public ResponseEntity<SportEventRequestDto> update(@PathVariable("id") Long id,
-							@RequestBody SportEventRequestDto dto) throws InterruptedException, ExecutionException {
-								return null;
-		/*try {
-			//if not valid throws exception
-			//to manage concurrent simulate client get before update
-			CompletableFuture<SportEventRequestDto> sportEventUpdated = eventService.createEvent(updateNewValues(id,dto))
-					.thenApply(a-> utilMapper.convertToDto(a));
-			sportEventUpdated.thenAccept(e-> eventService.notifyData(e));
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> update(@PathVariable("id") Long id,
+									@RequestHeader("Version") Long version,
+									@RequestBody SportEventRequestDto dto) throws InterruptedException, ExecutionException {
+		try {
+			//TODO return map - >  current toUpdate . 
+			dto.setVersion(version);
+			return ResponseEntity.ok(eventService.updateEvent(dto, version, id));
+		} catch (Exception e) {
+			log.error("Invalid version of the resource", e);
 			
-			return new ResponseEntity <>(sportEventUpdated.get(),HttpStatus.ACCEPTED);
-		
-		}  catch (SportEventNotFoundException   e) {
-			 e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}	*/
+			return new ResponseEntity<>(eventService.currentLastVersion(dto,id), HttpStatus.CONFLICT);
+		}
 	}
 	
-	/*private SportEvent updateNewValues(Long id,SportEventRequestDto dto) {
-		return  eventService.findById(id).builder()
-							.id(dto.getId())
-							.teamAway(dto.getTeamAway())
-							.teamHome(dto.getTeamHome())
-							.scoreAway(dto.getScoreAway())
-							.scoreHome(dto.getScoreHome()).build();
-	}*/
 }

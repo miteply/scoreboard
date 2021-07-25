@@ -14,6 +14,7 @@ import com.misha.scoreboard.service.NotifyServ;
  * @author Mykhaylo.T
  *
  */
+
 @RestController
 public class SseCtrl {
 	

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.misha.scoreboard.model.SportEvent;
 
 /**
- * Interacts with {@link SportEvent} entity from the database,
+ * Interacts with {@link SportEvent} entity from the database
  * 
  * @author Mykhaylo.T
  *
