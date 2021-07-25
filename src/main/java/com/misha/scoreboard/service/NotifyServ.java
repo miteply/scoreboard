@@ -1,8 +1,8 @@
 package com.misha.scoreboard.service;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -30,6 +30,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.misha.scoreboard.dto.SportEventRequestDto;
 
+import lombok.extern.slf4j.Slf4j;
+
 /** * 
  * Server Sent Event Service to manage unidirectional communication from the server to browser, 
  * saves all subscribers and then push data to them when {@link SportDataEvent.class} 
@@ -39,35 +41,31 @@ import com.misha.scoreboard.dto.SportEventRequestDto;
  */
 
 @Service
+@Slf4j
 public class NotifyServ {
 	
-	private static final Logger LOG = LogManager.getLogger(NotifyServ.class);
-	private Set<SseEmitter> sseEmitters = new HashSet<SseEmitter>();
-    
-	@Autowired
-	private ExecutorService executorService;
+	private Set<SseEmitter> sseEmitters = new CopyOnWriteArraySet <SseEmitter>();
 	
 	public SseEmitter subscribe () {
 			return createEmitter();
 	}
 	
 	public void publishData(SportEventRequestDto data) {
-		LOG.info("...notify clients about the event: " + data.toString());
+		log.info("...notify clients about the event: " + data.toString());
 		
 			ObjectMapper objectMapper = new ObjectMapper();
 			String jsonData;
 			try {
 				jsonData = objectMapper.writeValueAsString(data);
-				executorService.execute(()->{
 					sseEmitters.forEach(client -> {
 						try {
 							client.send(SseEmitter.event().name("eventSaved").data(jsonData));
 						} catch (IOException e) {
 							client.completeWithError(e);
 						}
-					});
 				});
 			} catch (JsonProcessingException e1) {
+				log.error("",e1);
 				e1.printStackTrace();
 			}
 	}

@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Mykhaylo.T
  *
  */
+
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/api/events")
@@ -69,22 +68,11 @@ public class SportEventCtrl {
 	 */
 	@GetMapping
 	public ResponseEntity<List<SportEvent>> getAll(@RequestParam(required = false)
-													String name) throws InterruptedException, ExecutionException {
+												   String name) {
 		try {
-			List<SportEvent> list = eventService.findAll().get();
-			
-			if(name!= null && !name.isBlank()) {
-				list = list.stream()
-				.filter(e -> e.getTeamHome().toLowerCase().contains(name.toLowerCase()) ||
-										  e.getTeamAway().toLowerCase().contains(name.toLowerCase()))
-				.collect(Collectors.toList());
-			}
-			
-			if(list.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			
-			return new ResponseEntity<>(list,HttpStatus.OK);
-			
+			return ResponseEntity.ok(eventService.findAll(name));
 		}catch (Exception e) {
+			log.error("", e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
 	}
@@ -100,9 +88,9 @@ public class SportEventCtrl {
 	 * @throws InterruptedException 
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<SportEventRequestDto> getById (@PathVariable("id") Long id, HttpServletRequest request) throws InterruptedException, ExecutionException {
+	public ResponseEntity<?> getById (@PathVariable("id") Long id, HttpServletRequest request) {
 		try {	
-			return new ResponseEntity<>(utilMapper.convertToDto(eventService.findById(id).get()),HttpStatus.OK);
+			return ResponseEntity.ok(eventService.findById(id));
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -116,9 +104,8 @@ public class SportEventCtrl {
 	 * @throws ExecutionException
 	 */
 	@GetMapping("/last")
-	public ResponseEntity<SportEventRequestDto > getLastUpdated() throws InterruptedException, ExecutionException {
-		CompletableFuture<SportEventRequestDto> lastEventDto = eventService.getLastUpdated().thenApply(a -> utilMapper.convertToDto(a.get()));
-		return new ResponseEntity<>(lastEventDto.get(),HttpStatus.FOUND);
+	public ResponseEntity<SportEventRequestDto > getLastUpdated() {
+		return new ResponseEntity<>(eventService.findLastUpdated(),HttpStatus.FOUND);
 	}
 	
 	/**
@@ -139,14 +126,12 @@ public class SportEventCtrl {
 														UriComponentsBuilder uriBuilder) throws InterruptedException, ExecutionException {
 		log.info("creating new event:" + eventRequestDto.toString());
 		
-		CompletableFuture<SportEventRequestDto> sportEventCreated = eventService.createEvent(utilMapper.convertToEntity(eventRequestDto))
-				.thenApply(a-> utilMapper.convertToDto(a));
-		sportEventCreated.thenAccept(e -> eventService.notifyData(e));
+		SportEventRequestDto sportEventCreated = eventService.createEvent(eventRequestDto);
 	
-		UriComponents uriComponents = uriBuilder.path("/api/events/{id}").buildAndExpand(sportEventCreated.get().getId());
+		UriComponents uriComponents = uriBuilder.path("/api/events/{id}").buildAndExpand(sportEventCreated.getId());
 		response.setHeader("Location", uriComponents.toUri().toString());
 	
-		return new ResponseEntity<>(sportEventCreated.get(),HttpStatus.CREATED);
+		return new ResponseEntity<>(sportEventCreated,HttpStatus.CREATED);
 	}
 	
 	/**	
@@ -160,7 +145,8 @@ public class SportEventCtrl {
 	@PutMapping("/{id}")
 	public ResponseEntity<SportEventRequestDto> update(@PathVariable("id") Long id,
 							@RequestBody SportEventRequestDto dto) throws InterruptedException, ExecutionException {
-		try {
+								return null;
+		/*try {
 			//if not valid throws exception
 			//to manage concurrent simulate client get before update
 			CompletableFuture<SportEventRequestDto> sportEventUpdated = eventService.createEvent(updateNewValues(id,dto))
@@ -172,15 +158,15 @@ public class SportEventCtrl {
 		}  catch (SportEventNotFoundException   e) {
 			 e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}	
+		}	*/
 	}
 	
-	private SportEvent updateNewValues(Long id,SportEventRequestDto dto) {
-		return  eventService.getEventById(id).builder()
+	/*private SportEvent updateNewValues(Long id,SportEventRequestDto dto) {
+		return  eventService.findById(id).builder()
 							.id(dto.getId())
 							.teamAway(dto.getTeamAway())
 							.teamHome(dto.getTeamHome())
 							.scoreAway(dto.getScoreAway())
 							.scoreHome(dto.getScoreHome()).build();
-	}
+	}*/
 }

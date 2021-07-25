@@ -42,7 +42,7 @@ public class UtilMapper {
 	public SportEvent convertToEntity (SportEventRequestDto dto) {
 		SportEvent event = modelMapper.map(dto,SportEvent.class);
 		if(dto.getId() != null) {
-			SportEvent eventOld = service.getEventById(dto.getId());
+			SportEventRequestDto eventOld = service.findById(dto.getId());
 			event.setId(eventOld.getId());
 		}
 		return event;

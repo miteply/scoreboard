@@ -73,7 +73,7 @@ class EventControllerTest {
 	@DisplayName("Test findById Not Found")
 	public void getEventWithUnknownIdShouldReturn404() throws Exception {
 		
-		when(eventServiceMock.getEventById(99L)).thenThrow(new SportEventNotFoundException("SportEvent with id '99' not found"));
+		when(eventServiceMock.findById(99L)).thenThrow(new SportEventNotFoundException("SportEvent with id '99' not found"));
 		
 		this.mockMvc.perform(get("/api/events/99"))
 		.andExpect(status().isNotFound());

@@ -40,24 +40,24 @@ public class DefaultSportEventLoader implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("Starting to save init data ...");
-		loadSportEvents();
+		//loadSportEvents();
 	}
 	
-	private void loadSportEvents() {
+	/*private void loadSportEvents() {
 			executor.submit(() -> {
 			 //basic template which notify the inserted data 
 			 sportEventService.createEvent(templateEvent)
 			 				  .thenApply(e -> utilMapper.convertToDto(e))
 			 				  .thenAccept(e -> {
-			 					  	sportEventService.notifyData(e);
+			 					  	
 			 				  		total++;
 			 				   });
 			  persistInitialRandomDataIntoDatabase();
 		    });
-	}
+	}*/
 	
 	private void persistInitialRandomDataIntoDatabase()  {
-			sportEventService.createEvent(footbalEvent1);
+			/*sportEventService.createEvent(footbalEvent1);
 			total++;
 			sportEventService.createEvent(footbalEvent2);
 			total++;
@@ -70,12 +70,7 @@ public class DefaultSportEventLoader implements CommandLineRunner {
 			}
 			
 		log.info(String.format("Total %s sport events are saved in the database", total));
-		
-		 sportEventService.getLastUpdated()
-							 .thenAccept( e -> {
-								 log.info("last inserted is going to be notified..." );
-										 notifyService.publishData(utilMapper.convertToDto(e.get()));
-									 });
+		log.info("last inserted:"  + sportEventService.findLastUpdated());*/
 	}
 
 	private SportEvent initRandomSportsEventData(final String nameA, String nameB, Integer scoreA, Integer scoreB) {

@@ -14,7 +14,7 @@ var subscribeEvents = function() {
 		console.log("event.data: " + json_data.teamHome + " vs " + json_data.teamAway  + 
 		" ("+json_data.scoreHome+"-"+json_data.scoreAway+")");
 		//call toast, passing the value
-		$("#toasEventCreated").trigger("click", ["New event: " + json_data.teamHome + " vs " + json_data.teamAway]);
+		$("#toasEventCreated").trigger("click", ["Event: " + json_data.teamHome + " vs " + json_data.teamAway]);
 
 		/*TheInnerHTML += "<tr><td>"+formatEvent(json_data)+"</td>"+
 						 "<td>"+formatScore(json_data)+"</td></tr>";

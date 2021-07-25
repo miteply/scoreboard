@@ -30,10 +30,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "events")
+@Entity(name = "event")
 @Component
 @EntityListeners(AuditingEntityListener.class)
-public class SportEvent implements Serializable{
+public class SportEvent implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 

@@ -7,6 +7,10 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.misha.scoreboard.utils.UtilMapper;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +22,8 @@ import lombok.NoArgsConstructor;
  *
  */
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class SportEventRequestDto implements Serializable {
 
