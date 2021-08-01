@@ -22,22 +22,7 @@ import com.misha.scoreboard.model.SportEvent;
 import com.misha.scoreboard.repository.SportEventRepo;
 import com.misha.scoreboard.service.SportEventServ;
 
-/*
- * 
- * Ideally Each Test should only focus on a single responsability 
- * and include a single assertion.
- * Focusing on a CLEAR separation always has benefits.
- */
 /**
- * 
- * 
- * The test configures the main Application class.
- * Creates a mock instance of EventService and att 
- * it to the application contect so thaht it's injected into
- * EventController.
- * The Setup method uses the statically imported webAppContextSetup method from 
- * MockMvcBuilder and the injected WebbApplicationContext to build a MockMvc instance.
- * 
  * @author Mykhaylo.T
  *
  */
@@ -73,7 +58,7 @@ class EventControllerTest {
 	@DisplayName("Test findById Not Found")
 	public void getEventWithUnknownIdShouldReturn404() throws Exception {
 		
-		when(eventServiceMock.findById(99L)).thenThrow(new SportEventNotFoundException("SportEvent with id '99' not found"));
+		when(eventServiceMock.findById(99L)).thenThrow(new SportEventNotFoundException("ID 99 not found"));
 		
 		this.mockMvc.perform(get("/api/events/99"))
 		.andExpect(status().isNotFound());

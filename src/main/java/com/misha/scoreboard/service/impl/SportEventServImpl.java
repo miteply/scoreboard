@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.misha.scoreboard.dto.SportEventRequestDto;
 import com.misha.scoreboard.exception.ConflictVersionEventException;
+import com.misha.scoreboard.exception.DataNotFoundException;
 import com.misha.scoreboard.exception.SportEventNotFoundException;
 import com.misha.scoreboard.model.SportEvent;
 import com.misha.scoreboard.repository.SportEventRepo;
@@ -57,30 +58,44 @@ public class SportEventServImpl implements SportEventServ {
 	
 	//find all events with name only if not null
 	@Override
-	public List<SportEvent> findAll(String name) {
-		if(name!= null && !name.isBlank()) {
-			eventRepository.findAll(Example.of(SportEvent
+	public List<SportEvent> findAll() {
+		var events = (List<SportEvent>)eventRepository.findAll();
+		
+		if(events.isEmpty())
+			throw new DataNotFoundException();
+		
+		return events;
+	}
+	
+	@Override
+	public List<SportEvent> findAllByName(String name){
+			var events = (List<SportEvent>) eventRepository.findAll(Example.of(SportEvent
 					.builder()
 					.teamHome(name)
 					.teamAway(name)
 					.build(), ExampleMatcher.matchingAny()));
-		}
-		return eventRepository.findAll();
+	
+			if(events.isEmpty())
+				throw new DataNotFoundException();
+			
+			return events; 
+		
 	}
 	
 	@Override
 	public SportEventRequestDto findById(Long id) {
-		return utilMapper.convertToDto(eventRepository.findById(id).orElseThrow(()-> new SportEventNotFoundException("ID NOT VALID")));
+		return utilMapper.convertToDto(eventRepository.findById(id)
+				.orElseThrow(()-> new SportEventNotFoundException(String.format("ID %s not valid",  id))));
 	}
 	
 	@Override
 	public SportEventRequestDto findLastUpdated() {
-		return  findAll(null)
+		return  findAll()
 						.stream()
 						.filter(event -> event.getUpdatingDate() != null)
 						.max(Comparator.comparing(SportEvent::getUpdatingDate))
 						.map(e -> utilMapper.convertToDto(e))
-						.orElseThrow(RuntimeException::new);
+						.orElseThrow(DataNotFoundException::new);
 	}
 	
 	@Override

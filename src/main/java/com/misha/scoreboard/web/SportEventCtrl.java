@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,14 +66,11 @@ public class SportEventCtrl {
 	 * @throws ExecutionException
 	 */
 	@GetMapping
-	public ResponseEntity<List<SportEvent>> getAll(@RequestParam(required = false)
-												   String name) {
-		try {
-			return ResponseEntity.ok(eventService.findAll(name));
-		}catch (Exception e) {
-			log.error("", e);
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}	
+	public ResponseEntity<List<SportEvent>> getAll(@RequestParam(required = false) String name) {
+
+		return ResponseEntity
+				.ok((name != null && !name.isBlank()) ? eventService.findAll() : eventService.findAllByName(name));
+
 	}
     
 	/**
@@ -86,14 +84,10 @@ public class SportEventCtrl {
 	 * @throws InterruptedException 
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getById (@PathVariable("id") Long id, HttpServletRequest request) {
-		try {	
-			SportEventRequestDto findById = eventService.findById(id);
-			return ResponseEntity.ok().header("Version", findById.getVersion().toString())//version of the resource
-									  .body(findById);
-		}catch(Exception e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<?> getById(@PathVariable("id") Long id, HttpServletRequest request) {
+		SportEventRequestDto findById = eventService.findById(id);
+		return ResponseEntity.ok().header("Version", findById.getVersion().toString())// version of the resource
+				.body(findById);
 	}
 	
 	/**
@@ -119,7 +113,8 @@ public class SportEventCtrl {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	@PostMapping
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SportEventRequestDto> create(@Valid @RequestBody SportEventRequestDto eventRequestDto,
 														HttpServletResponse response,
 			   											HttpServletRequest request,
@@ -149,8 +144,7 @@ public class SportEventCtrl {
 	public ResponseEntity<?> update(@PathVariable("id") Long id,
 									@RequestHeader("Version") Long version,
 									@RequestBody SportEventRequestDto dto) throws InterruptedException, ExecutionException {
-		try {
-			//TODO return map - >  current toUpdate . 
+		try { 
 			dto.setVersion(version);
 			return ResponseEntity.ok(eventService.updateEvent(dto, version, id));
 		} catch (Exception e) {

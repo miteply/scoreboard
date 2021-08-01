@@ -18,7 +18,8 @@ import com.misha.scoreboard.model.SportEvent;
 @Component
 public interface SportEventServ  {
 	
-	List<SportEvent> findAll(String name);
+	List<SportEvent> findAll();
+	List<SportEvent> findAllByName(String name);
 	SportEventRequestDto findById(Long id);
 	SportEventRequestDto findLastUpdated();
 	SportEventRequestDto createEvent(SportEventRequestDto event);
